@@ -3,24 +3,23 @@ from mitmproxy.tools.dump import DumpMaster
 import bs4
 import re
 
-print('加入TG交流群：https://t.me/pandown')
-print('给我捐赠：https://acg.uy/donate.html')
 print('项目地址：https://github.com/TkzcM/pandownload-login/')
 
 
 class AddHeader:
     def response(self, flow):
+        print(flow.response.text)
         if "pan.baidu.com/disk/home" in flow.request.pretty_url:
             orig_body = flow.response.text
             parsed_body = bs4.BeautifulSoup(orig_body, features="html.parser")
-            script = str(parsed_body.find_all('script')[-1])
-            regex_token = "bdstoken\"\:\"(\w{32})\""
+            script = str(parsed_body.find_all('script')[-2])
+            regex_token = "locals\.set\(\'bdstoken\', \'(\w{32})\'"
             regex_name = "username\"\:\"(.+?)\""
+            print(script)
             bdstoken = re.search(regex_token, script)[1]
-            username = re.search(regex_name, script)[1]
             body = '<script type=\"text/javascript\">\ntypeof initPrefetch === \'function\' && ' \
                    'initPrefetch(' \
-                   '\'' + bdstoken + '\', \'' + username + '\');\n</script>'
+                   '\'' + bdstoken + '\', \'''\');\n</script>'
             flow.response.text = body
             flow.response.status_code = 200
             print('修改成功')
