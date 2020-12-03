@@ -16,10 +16,15 @@ class AddHeader:
             regex_token = ",\"bdstoken\":\"(\w{32})\""
             regex_name = "username\"\:\"(.+?)\""
             print(script)
-            bdstoken = re.search(regex_token, script)[1]
+            if re.search(regex_token, script) == None:
+                regex_token = "locals\.set\(\'bdstoken\', \'(\w{32})\'"
+                bdstoken = re.search(regex_token, script)
+            else:
+                bdstoken = re.search(regex_token, script)
+            finalbds = bdstoken[1]
             body = '<script type=\"text/javascript\">\ntypeof initPrefetch === \'function\' && ' \
                    'initPrefetch(' \
-                   '\'' + bdstoken + '\', \'''\');\n</script>'
+                   '\'' + finalbds + '\', \'''\');\n</script>'
             flow.response.text = body
             flow.response.status_code = 200
             print('修改成功')
