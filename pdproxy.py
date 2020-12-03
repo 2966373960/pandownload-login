@@ -12,8 +12,8 @@ class AddHeader:
         if "pan.baidu.com/disk/home" in flow.request.pretty_url:
             orig_body = flow.response.text
             parsed_body = bs4.BeautifulSoup(orig_body, features="html.parser")
-            script = str(parsed_body.find_all('script')[-2])
-            regex_token = "locals\.set\(\'bdstoken\', \'(\w{32})\'"
+            script = str(parsed_body)
+            regex_token = ",\"bdstoken\":\"(\w{32})\""
             regex_name = "username\"\:\"(.+?)\""
             print(script)
             bdstoken = re.search(regex_token, script)[1]
